@@ -26,11 +26,12 @@ class Distro(cloudinit.distros.netbsd.NetBSD):
     ]
 
     def _read_hostname(self, filename, default=None):
-        return util.load_text_file(self.hostname_conf_fn)
+        # /etc/myname and previous-hostname share one format
+        return util.load_text_file(filename).strip()
 
     def _write_hostname(self, hostname, filename):
         content = hostname + "\n"
-        util.write_file(self.hostname_conf_fn, content)
+        util.write_file(filename, content)
 
     def _get_add_member_to_group_cmd(self, member_name, group_name):
         return ["usermod", "-G", group_name, member_name]
