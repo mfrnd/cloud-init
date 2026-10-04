@@ -54,12 +54,19 @@ class BSD(distros.Distro):
         return (self.hostname_conf_fn, sys_hostname)
 
     def _read_hostname(self, filename, default=None):
+        if filename.endswith("/previous-hostname"):
+            return util.load_text_file(filename).strip()
         return bsd_utils.get_rc_config_value("hostname")
 
     def _get_add_member_to_group_cmd(self, member_name, group_name):
         raise NotImplementedError("Return list cmd to add member to group")
 
     def _write_hostname(self, hostname, filename):
+        # previous-hostname is cloud-init's own record, not rc.conf: without
+        # it, update_hostname cannot tell a user's change from its own
+        if filename.endswith("/previous-hostname"):
+            util.write_file(filename, hostname + "\n", 0o644)
+            return
         bsd_utils.set_rc_config_value("hostname", hostname, fn="/etc/rc.conf")
 
     def create_group(self, name, members=None):
