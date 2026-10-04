@@ -57,6 +57,7 @@ class Distro(distros.Distro):
             conf = HostnameConf("")
             conf.set_hostname(hostname)
             util.write_file(filename, str(conf), 0o644)
+            return
         create_hostname_file = util.get_cfg_option_bool(
             self._cfg, "create_hostname_file", True
         )
